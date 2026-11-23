@@ -1,0 +1,957 @@
+{
+ "id": "00000000-0000-4000-8000-62657274685f",
+ "revision": 0,
+ "last_node_id": 15,
+ "last_link_id": 14,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "Note",
+   "pos": [
+    40,
+    -330
+   ],
+   "size": [
+    560,
+    250
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "Note"
+   },
+   "widgets_values": [
+    "BERTH YIELD / RESUME - the simple one\n\nProblem: when Berth owns the GPU, an LLM call made from inside a ComfyUI job waits for the card while the job (which holds the card) waits for the LLM. Deadlock (berth#299).\n\nFix: Berth Yield frees ComfyUI's models and hands the card to Berth; the LLM node then runs; Berth Resume takes the card back. The graph's links fix the order, so wire: idea -> YIELD -> LLM -> RESUME -> rest."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 2,
+   "type": "CheckpointLoaderSimple",
+   "pos": [
+    40,
+    80
+   ],
+   "size": [
+    320,
+    100
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "ckpt_name",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "ckpt_name"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      8
+     ],
+     "slot_index": 0
+    },
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "links": [
+      6,
+      7
+     ],
+     "slot_index": 1
+    },
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      13
+     ],
+     "slot_index": 2
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CheckpointLoaderSimple"
+   },
+   "widgets_values": [
+    "sd_xl_base_1.0.safetensors"
+   ]
+  },
+  {
+   "id": 3,
+   "type": "PrimitiveStringMultiline",
+   "pos": [
+    40,
+    280
+   ],
+   "size": [
+    420,
+    160
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "value",
+     "type": "STRING",
+     "link": null,
+     "widget": {
+      "name": "value"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "STRING",
+     "type": "STRING",
+     "links": [
+      1
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "PrimitiveStringMultiline"
+   },
+   "widgets_values": [
+    "a lighthouse on a cliff"
+   ],
+   "title": "1. Your idea (short)"
+  },
+  {
+   "id": 4,
+   "type": "BerthYield",
+   "pos": [
+    520,
+    280
+   ],
+   "size": [
+    300,
+    80
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "value",
+     "type": "*",
+     "link": 1
+    },
+    {
+     "name": "seconds",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "seconds"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "*",
+     "links": [
+      2
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BerthYield"
+   },
+   "widgets_values": [
+    120
+   ],
+   "title": "2. Berth Yield (before LLM)",
+   "color": "#332922",
+   "bgcolor": "#593930"
+  },
+  {
+   "id": 5,
+   "type": "OllamaConnectivityV2",
+   "pos": [
+    520,
+    440
+   ],
+   "size": [
+    300,
+    150
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "url",
+     "type": "STRING",
+     "link": null,
+     "widget": {
+      "name": "url"
+     }
+    },
+    {
+     "name": "model",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "model"
+     }
+    },
+    {
+     "name": "keep_alive",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "keep_alive"
+     }
+    },
+    {
+     "name": "keep_alive_unit",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "keep_alive_unit"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "connection",
+     "type": "OLLAMA_CONNECTIVITY",
+     "links": [
+      3
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "OllamaConnectivityV2"
+   },
+   "widgets_values": [
+    "http://127.0.0.1:11434",
+    "llama3.2",
+    5,
+    "minutes"
+   ],
+   "title": "LLM server (any Ollama)"
+  },
+  {
+   "id": 6,
+   "type": "OllamaGenerateV2",
+   "pos": [
+    880,
+    280
+   ],
+   "size": [
+    380,
+    330
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "connectivity",
+     "type": "OLLAMA_CONNECTIVITY",
+     "link": 3,
+     "shape": 7
+    },
+    {
+     "name": "options",
+     "type": "OLLAMA_OPTIONS",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "context",
+     "type": "OLLAMA_CONTEXT",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "meta",
+     "type": "OLLAMA_META",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "system",
+     "type": "STRING",
+     "link": null,
+     "widget": {
+      "name": "system"
+     }
+    },
+    {
+     "name": "prompt",
+     "type": "STRING",
+     "link": 2,
+     "widget": {
+      "name": "prompt"
+     }
+    },
+    {
+     "name": "think",
+     "type": "BOOLEAN",
+     "link": null,
+     "widget": {
+      "name": "think"
+     }
+    },
+    {
+     "name": "keep_context",
+     "type": "BOOLEAN",
+     "link": null,
+     "widget": {
+      "name": "keep_context"
+     }
+    },
+    {
+     "name": "format",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "format"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "result",
+     "type": "STRING",
+     "links": [
+      4
+     ],
+     "slot_index": 0
+    },
+    {
+     "name": "thinking",
+     "type": "STRING",
+     "links": [],
+     "slot_index": 1
+    },
+    {
+     "name": "context",
+     "type": "OLLAMA_CONTEXT",
+     "links": [],
+     "slot_index": 2
+    },
+    {
+     "name": "meta",
+     "type": "OLLAMA_META",
+     "links": [],
+     "slot_index": 3
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "OllamaGenerateV2"
+   },
+   "widgets_values": [
+    "You write one detailed prompt for an image model. Answer with the prompt only.",
+    "",
+    false,
+    false,
+    "text"
+   ],
+   "title": "3. LLM call (the GPU is Berth's here)"
+  },
+  {
+   "id": 7,
+   "type": "BerthResume",
+   "pos": [
+    1320,
+    280
+   ],
+   "size": [
+    280,
+    60
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "value",
+     "type": "*",
+     "link": 4
+    }
+   ],
+   "outputs": [
+    {
+     "name": "value",
+     "type": "*",
+     "links": [
+      5
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "BerthResume"
+   },
+   "widgets_values": [],
+   "title": "4. Berth Resume (after LLM)",
+   "color": "#332922",
+   "bgcolor": "#593930"
+  },
+  {
+   "id": 8,
+   "type": "CLIPTextEncode",
+   "pos": [
+    1320,
+    400
+   ],
+   "size": [
+    400,
+    160
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 6
+    },
+    {
+     "name": "text",
+     "type": "STRING",
+     "link": 5,
+     "widget": {
+      "name": "text"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      9
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    ""
+   ],
+   "title": "5. Positive prompt (LLM text)"
+  },
+  {
+   "id": 9,
+   "type": "CLIPTextEncode",
+   "pos": [
+    1320,
+    600
+   ],
+   "size": [
+    400,
+    100
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 7
+    },
+    {
+     "name": "text",
+     "type": "STRING",
+     "link": null,
+     "widget": {
+      "name": "text"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "links": [
+      10
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    "blurry, text, watermark"
+   ],
+   "title": "Negative prompt"
+  },
+  {
+   "id": 10,
+   "type": "EmptyLatentImage",
+   "pos": [
+    40,
+    500
+   ],
+   "size": [
+    320,
+    110
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "width",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "width"
+     }
+    },
+    {
+     "name": "height",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "height"
+     }
+    },
+    {
+     "name": "batch_size",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "batch_size"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      11
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "EmptyLatentImage"
+   },
+   "widgets_values": [
+    1024,
+    1024,
+    1
+   ]
+  },
+  {
+   "id": 11,
+   "type": "KSampler",
+   "pos": [
+    1780,
+    280
+   ],
+   "size": [
+    320,
+    300
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 8
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 9
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 10
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 11
+    },
+    {
+     "name": "seed",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "seed"
+     }
+    },
+    {
+     "name": "steps",
+     "type": "INT",
+     "link": null,
+     "widget": {
+      "name": "steps"
+     }
+    },
+    {
+     "name": "cfg",
+     "type": "FLOAT",
+     "link": null,
+     "widget": {
+      "name": "cfg"
+     }
+    },
+    {
+     "name": "sampler_name",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "sampler_name"
+     }
+    },
+    {
+     "name": "scheduler",
+     "type": "COMBO",
+     "link": null,
+     "widget": {
+      "name": "scheduler"
+     }
+    },
+    {
+     "name": "denoise",
+     "type": "FLOAT",
+     "link": null,
+     "widget": {
+      "name": "denoise"
+     }
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      12
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSampler"
+   },
+   "widgets_values": [
+    1,
+    "fixed",
+    20,
+    6.0,
+    "euler",
+    "normal",
+    1.0
+   ]
+  },
+  {
+   "id": 12,
+   "type": "VAEDecode",
+   "pos": [
+    2140,
+    280
+   ],
+   "size": [
+    200,
+    60
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 12
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 13
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      14
+     ],
+     "slot_index": 0
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecode"
+   },
+   "widgets_values": []
+  },
+  {
+   "id": 13,
+   "type": "SaveImage",
+   "pos": [
+    2140,
+    400
+   ],
+   "size": [
+    320,
+    300
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 14
+    },
+    {
+     "name": "filename_prefix",
+     "type": "STRING",
+     "link": null,
+     "widget": {
+      "name": "filename_prefix"
+     }
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "SaveImage"
+   },
+   "widgets_values": [
+    "comfyui-berth-yield_simple"
+   ]
+  },
+  {
+   "id": 14,
+   "type": "Note",
+   "pos": [
+    520,
+    640
+   ],
+   "size": [
+    330,
+    190
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "Note"
+   },
+   "widgets_values": [
+    "Why the LLM node re-runs on every Queue: both Berth nodes are never cached (a cached Yield would let the LLM run without yielding).\n\nPut the LLM node ONLY between Yield and Resume."
+   ],
+   "color": "#322",
+   "bgcolor": "#533"
+  },
+  {
+   "id": 15,
+   "type": "Note",
+   "pos": [
+    40,
+    660
+   ],
+   "size": [
+    420,
+    170
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "Note"
+   },
+   "widgets_values": [
+    "Setup: set BERTH_API_KEY (or the key file) in ComfyUI's environment. No key or no Berth = both nodes pass the value through with a warning in the log. Set the Ollama URL and a model you have."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  }
+ ],
+ "links": [
+  [
+   1,
+   3,
+   0,
+   4,
+   0,
+   "STRING"
+  ],
+  [
+   2,
+   4,
+   0,
+   6,
+   6,
+   "*"
+  ],
+  [
+   3,
+   5,
+   0,
+   6,
+   0,
+   "OLLAMA_CONNECTIVITY"
+  ],
+  [
+   4,
+   6,
+   0,
+   7,
+   0,
+   "STRING"
+  ],
+  [
+   5,
+   7,
+   0,
+   8,
+   1,
+   "*"
+  ],
+  [
+   6,
+   2,
+   1,
+   8,
+   0,
+   "CLIP"
+  ],
+  [
+   7,
+   2,
+   1,
+   9,
+   0,
+   "CLIP"
+  ],
+  [
+   8,
+   2,
+   0,
+   11,
+   0,
+   "MODEL"
+  ],
+  [
+   9,
+   8,
+   0,
+   11,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   10,
+   9,
+   0,
+   11,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   11,
+   10,
+   0,
+   11,
+   3,
+   "LATENT"
+  ],
+  [
+   12,
+   11,
+   0,
+   12,
+   0,
+   "LATENT"
+  ],
+  [
+   13,
+   2,
+   2,
+   12,
+   1,
+   "VAE"
+  ],
+  [
+   14,
+   12,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 0,
+   "title": "Yield -> LLM -> Resume",
+   "bounding": [
+    500,
+    190,
+    1140,
+    480
+   ],
+   "color": "#a1309b",
+   "font_size": 24,
+   "flags": {}
+  },
+  {
+   "id": 0,
+   "title": "Render",
+   "bounding": [
+    1660,
+    190,
+    830,
+    530
+   ],
+   "color": "#3f789e",
+   "font_size": 24,
+   "flags": {}
+  }
+ ],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.8,
+   "offset": [
+    60,
+    60
+   ]
+  }
+ },
+ "version": 0.4
+}

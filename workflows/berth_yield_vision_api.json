@@ -1,0 +1,21 @@
+{
+  "1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": "sd_xl_base_1.0.safetensors"}},
+  "2": {"class_type": "CLIPTextEncode", "inputs": {"text": "a lighthouse on a cliff at sunset, photo", "clip": ["1", 1]}},
+  "3": {"class_type": "CLIPTextEncode", "inputs": {"text": "blurry, text, watermark", "clip": ["1", 1]}},
+  "4": {"class_type": "EmptyLatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+  "5": {"class_type": "KSampler", "inputs": {"model": ["1", 0], "positive": ["2", 0], "negative": ["3", 0], "latent_image": ["4", 0],
+        "seed": 1, "steps": 20, "cfg": 6.0, "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0}},
+  "6": {"class_type": "VAEDecode", "inputs": {"samples": ["5", 0], "vae": ["1", 2]}},
+  "7": {"class_type": "SaveImage", "inputs": {"images": ["6", 0], "filename_prefix": "berth_yield_before"}},
+  "8": {"class_type": "BerthYield", "inputs": {"value": ["6", 0], "seconds": 120}},
+  "9": {"class_type": "OllamaConnectivityV2", "inputs": {"url": "http://127.0.0.1:11434", "model": "llava", "keep_alive": 5, "keep_alive_unit": "minutes"}},
+  "10": {"class_type": "OllamaGenerateV2", "inputs": {"system": "You write prompts for an image model. Answer with the prompt only.",
+         "prompt": "Describe this image as one prompt, then move the scene to a stormy night.", "think": false, "keep_context": false,
+         "format": "text", "images": ["8", 0], "connectivity": ["9", 0]}},
+  "11": {"class_type": "BerthResume", "inputs": {"value": ["10", 0]}},
+  "12": {"class_type": "CLIPTextEncode", "inputs": {"text": ["11", 0], "clip": ["1", 1]}},
+  "13": {"class_type": "KSampler", "inputs": {"model": ["1", 0], "positive": ["12", 0], "negative": ["3", 0], "latent_image": ["4", 0],
+         "seed": 1, "steps": 20, "cfg": 6.0, "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0}},
+  "14": {"class_type": "VAEDecode", "inputs": {"samples": ["13", 0], "vae": ["1", 2]}},
+  "15": {"class_type": "SaveImage", "inputs": {"images": ["14", 0], "filename_prefix": "berth_yield_after"}}
+}

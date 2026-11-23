@@ -1,0 +1,6 @@
+comfyui-berth-yield
+Copyright 2026 chapi456
+
+This is an unofficial companion project. It is not affiliated with or endorsed by the Berth project.
+It speaks Berth's public HTTP yield API (https://github.com/T-Crypt/berth, docs/leasing.md), designed by
+Berth's author in berth#299. Berth is licensed under Apache-2.0; no Berth code is included here.
